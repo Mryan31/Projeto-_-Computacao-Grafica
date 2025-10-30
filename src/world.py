@@ -1,0 +1,1 @@
+# (Desenha o chão, a torre-cone, obstáculos [cite: 16, 17, 29])

@@ -1,0 +1,9 @@
+# Para a janela, loop de eventos e inputs
+pygame
+
+# Para os comandos de renderização 3D
+PyOpenGL
+PyOpenGL-accelerate
+
+# Para cálculos vetoriais e matriciais (essencial para as regras dos boids)
+numpy

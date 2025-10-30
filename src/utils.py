@@ -1,0 +1,1 @@
+# (Funções matemáticas auxiliares, ex: vetores 3D)

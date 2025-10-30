@@ -1,0 +1,1 @@
+# (Classe 'Flock', gerencia a lista de boids e aplica as 3 regras [cite: 8, 9, 10])

@@ -1,0 +1,1 @@
+# (Gerencia os 3 modos de visualização [cite: 18])

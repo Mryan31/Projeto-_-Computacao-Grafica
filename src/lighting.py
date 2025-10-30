@@ -1,0 +1,1 @@
+# (Configura a iluminação da cena OpenGL [cite: 20])
