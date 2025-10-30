@@ -6,9 +6,8 @@
 
 ## 👥 Autores
 
-* [Nome do Integrante 1]
+* Mateus Ryan de Castro Lima
 * [Nome do Integrante 2]
-* ...
 
 ## 🚀 Como Executar
 
