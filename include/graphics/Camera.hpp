@@ -1,0 +1,1 @@
+//Classe crucial para implementar os 3 modos de visualização pedidos. Ela vai calcular a matriz view (usando gluLookAt ou matemática de matrizes com GLM).

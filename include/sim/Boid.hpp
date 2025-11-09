@@ -1,0 +1,1 @@
+// Representará um único boid. Vai guardar sua posição, velocidade e o estado da animação das asas.

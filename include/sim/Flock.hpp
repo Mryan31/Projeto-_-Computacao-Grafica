@@ -1,0 +1,1 @@
+//Vai conter um std::vector<Boid> (ou similar). A lógica de Separação , Coesão e Alinhamento  será implementada aqui, iterando sobre todos os boids.

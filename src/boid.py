@@ -1,1 +1,0 @@
-# (Classe 'Boid', sua lógica de movimento, estado das asas [cite: 6, 26])
