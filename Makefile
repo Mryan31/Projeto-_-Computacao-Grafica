@@ -33,7 +33,7 @@ CPPFLAGS = -DGLFW_STATIC \
 LDFLAGS = -L"$(LIB_DIR)/glfw/lib-mingw-w64"
 
 # Lista de bibliotecas limpa e correta
-LIBS = -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32 -lshell32 -lm
+LIBS = -lglfw3 -lopengl32 -lglu32 -lgdi32 -luser32 -lkernel32 -lshell32 -lm
 
 # --- Regras (Rules) ---
 
