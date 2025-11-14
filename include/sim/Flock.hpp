@@ -5,11 +5,13 @@
 #include "Boid.hpp"
 
 #include <vector>
+#include <glm/glm.hpp>
 
 class Flock
 {
 public:
     std::vector<Boid> boids;
+    glm::vec3 center;
 
     Flock(int startSize = 50);
 

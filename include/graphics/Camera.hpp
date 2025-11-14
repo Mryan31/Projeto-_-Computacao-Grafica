@@ -14,6 +14,7 @@ public:
 
     // Configura o gluLookAt() baseado no modo e na posição do bando
     void look(const Flock& flock);
+    void nextMode();
 };
 
 #endif

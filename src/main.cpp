@@ -37,6 +37,8 @@ void setupProjection(GLFWwindow* window) {
 
 int main() {
     // ---- 1. Inicialização do GLFW ----
+    bool cKeyPressed = false;
+
     if (!glfwInit()) {
         std::cerr << "Falha ao inicializar GLFW!" << std::endl;
         return -1;
@@ -95,8 +97,12 @@ int main() {
         lastTime = currentTime;
 
         // ---- Processamento de Input (Exemplo) ----
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-            glfwSetWindowShouldClose(window, true);
+        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && !cKeyPressed) {
+            camera.nextMode();
+            cKeyPressed = true;
+        }
+        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
+            cKeyPressed = false;
         }
         // TODO: Adicionar inputs para câmera e boids
 
