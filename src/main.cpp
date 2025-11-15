@@ -11,6 +11,11 @@
 #include "graphics/World.hpp"
 #include "graphics/Renderer.hpp"
 
+// Variáveis globais para controle de input
+bool cKeyPressed = false;
+bool plusKeyPressed = false;
+bool minusKeyPressed = false;
+
 // Função para configurar a projeção 3D
 void setupProjection(GLFWwindow* window) {
     int width, height;
@@ -37,8 +42,6 @@ void setupProjection(GLFWwindow* window) {
 
 int main() {
     // ---- 1. Inicialização do GLFW ----
-    bool cKeyPressed = false;
-
     if (!glfwInit()) {
         std::cerr << "Falha ao inicializar GLFW!" << std::endl;
         return -1;
@@ -96,7 +99,12 @@ int main() {
         float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        // ---- Processamento de Input (Exemplo) ----
+        // ---- Processamento de Input ----
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
+
+        // Troca o modo da câmera ao pressionar "C"
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && !cKeyPressed) {
             camera.nextMode();
             cKeyPressed = true;
@@ -104,7 +112,45 @@ int main() {
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
             cKeyPressed = false;
         }
-        // TODO: Adicionar inputs para câmera e boids
+
+        // Controle do Boid-Objetivo (Líder)
+        {
+            glm::vec3 goalVel(0.0f);
+            float leaderSpeed = 5.0f; // 5 unidades/segundo
+
+            if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) // Frente
+                goalVel.z = -leaderSpeed;
+            if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) // Trás
+                goalVel.z = leaderSpeed;
+            if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) // Esquerda
+                goalVel.x = -leaderSpeed;
+            if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) // Direita
+                goalVel.x = leaderSpeed;
+            if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) // Cima
+                goalVel.y = leaderSpeed;
+            if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) // Baixo
+                goalVel.y = -leaderSpeed;
+            
+            flock.setGoalVelocity(goalVel);
+        }
+
+        // Adicionar/Remover Boids
+        // Tecla '+' (que é a mesma que '=')
+        if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS && !plusKeyPressed) {
+            flock.addBoid();
+            plusKeyPressed = true;
+        }
+        if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_RELEASE) {
+            plusKeyPressed = false;
+        }
+        // Tecla '-'
+        if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS && !minusKeyPressed) {
+            flock.removeBoid();
+            minusKeyPressed = true;
+        }
+        if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_RELEASE) {
+            minusKeyPressed = false;
+        }
 
         // ---- Lógica/Update ----
         flock.update(deltaTime); // Atualiza a posição dos boids
@@ -118,13 +164,13 @@ int main() {
         setupProjection(window);
 
         // 1. Configura a câmera
-        camera.look(flock); // Pessoa A implementa isso
+        camera.look(flock);
 
         // 2. Desenha o cenário (chão, torre)
-        world.draw(); // Pessoa A implementa isso
+        world.draw();
 
         // 3. Desenha os boids
-        renderer.draw(flock); // Pessoa A implementa isso
+        renderer.draw(flock);
 
         // ---- Troca os Buffers e Processa Eventos ----
         glfwSwapBuffers(window);

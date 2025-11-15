@@ -16,6 +16,15 @@ public:
     Flock(int startSize = 50);
 
     void update(float deltaTime);
+    void setGoalVelocity (const glm::vec3& vel);
+    glm::vec3 getGoalPosition() const;
+
+    void addBoid();
+    void removeBoid();
+
+private:
+    glm::vec3 goalPosition;
+    glm::vec3 goalVelocity;
 };
 
 

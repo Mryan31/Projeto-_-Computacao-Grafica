@@ -1,7 +1,6 @@
-// src/sim/Boid.cpp
 #include "sim/Boid.hpp"
-#include <cstdlib>
-#include <ctime>
+#include <cstdlib> // Para rand() e srand()
+#include <ctime>   // Para time()
 
 // --- Parâmetros de Simulação ---
 // (Você pode "brincar" com estes números para mudar o comportamento do bando)
@@ -10,19 +9,17 @@
 float RAIO_PERCEPCAO = 8.0f;
 
 // O "espaço pessoal" que um boid tenta manter
-float RAIO_SEPARACAO = 1.5f;
+float RAIO_SEPARACAO = 1.8f; 
 
 // Pesos para cada força (quão importante cada regra é)
 float PESO_ALINHAMENTO = 1.0f;
-float PESO_COESAO = 1.0f;
-float PESO_SEPARACAO = 1.8f; // Separação é geralmente a mais importante
+float PESO_COESAO = 0.4f;      
+float PESO_SEPARACAO = 2.0f; 
+float PESO_SEEK_GOAL = 1.5f; 
 
 // --- Funções Helper (privadas) ---
 
-// Função de Aleatoriedade (como antes)
-float randomFloat() {
-    return (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
-}
+// (A função randomFloat() foi movida para Flock.cpp)
 
 // Calcula uma força de esterço (steering) em direção a um alvo
 // Esta é a fórmula clássica de Reynolds: Força = Desejado - Atual
@@ -161,8 +158,14 @@ glm::vec3 Boid::checkBounds() {
 
 // --- Funções Públicas ---
 
+// Função helper (privada) para 'Boid()'
+// (Não pode ser 'randomFloat' pois movemos para Flock.cpp)
+static float boidRandomFloat() {
+    return (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
+}
+
 Boid::Boid() {
-    // Semente do gerador aleatório (como antes)
+    // Semente do gerador aleatório
     static bool seeded = false;
     if (!seeded) {
         srand((unsigned int)time(NULL));
@@ -171,13 +174,13 @@ Boid::Boid() {
 
     // Posição inicial aleatória
     position = glm::vec3(
-        randomFloat() * 20.0f, // Espalha mais
-        randomFloat() * 10.0f + 10.0f,
-        randomFloat() * 20.0f
+        boidRandomFloat() * 20.0f,
+        boidRandomFloat() * 10.0f + 10.0f,
+        boidRandomFloat() * 20.0f
     );
 
     // Velocidade inicial aleatória
-    velocity = glm::vec3(randomFloat(), randomFloat(), randomFloat());
+    velocity = glm::vec3(boidRandomFloat(), boidRandomFloat(), boidRandomFloat());
     velocity = glm::normalize(velocity) * 2.0f;
 
     // Reseta a aceleração
@@ -186,6 +189,9 @@ Boid::Boid() {
     // Define os limites
     maxSpeed = 3.5f;
     maxForce = 0.05f;
+
+    wingAngle = boidRandomFloat() * 180.0f; 
+    wingSpeed = 500.0f + (boidRandomFloat() * 200.0f);
 }
 
 // O "Músculo"
@@ -194,7 +200,7 @@ void Boid::applyForce(const glm::vec3& force) {
 }
 
 // O "Cérebro"
-void Boid::calculateForces(const std::vector<Boid>& flock) {
+void Boid::calculateForces(const std::vector<Boid>& flock, const glm::vec3& goalPosition) {
     // Reseta a aceleração para este frame
     acceleration = glm::vec3(0.0f);
 
@@ -202,17 +208,17 @@ void Boid::calculateForces(const std::vector<Boid>& flock) {
     glm::vec3 sep = separate(flock);
     glm::vec3 ali = align(flock);
     glm::vec3 coh = cohere(flock);
-
-    // Calcula a força de desvio dos limites
     glm::vec3 bounds = checkBounds();
+
+    // Regra 4: "Seek Goal" (Seguir o Líder)
+    glm::vec3 seek = steerTo(goalPosition);
 
     // Aplica as forças com seus pesos
     applyForce(sep * PESO_SEPARACAO);
     applyForce(ali * PESO_ALINHAMENTO);
     applyForce(coh * PESO_COESAO);
-    
-    // A força de desvio de limites é muito importante
-    applyForce(bounds * 2.0f); 
+    applyForce(bounds * 1.5f); // Multiplicador ajustado
+    applyForce(seek * PESO_SEEK_GOAL);
 }
 
 // A "Física"
@@ -233,4 +239,6 @@ void Boid::update(float deltaTime) {
     if (position.x < -100.0f) position.x = 100.0f;
     if (position.z > 100.0f) position.z = -100.0f;
     if (position.z < -100.0f) position.z = 100.0f;
+
+    wingAngle += wingSpeed * deltaTime;
 }

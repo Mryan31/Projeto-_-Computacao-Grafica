@@ -1,48 +1,45 @@
-# Trabalho Prático - Boids (Computação Gráfica - UFMG)
+Trabalho Prático - Boids (UFMG)
 
-[cite_start]Este projeto implementa uma simulação de bando ("flock") de pássaros virtuais (boids) em um espaço 3D, baseado no trabalho prático proposto por Renato Ferreira[cite: 2, 3].
+Este projeto é uma implementação do algoritmo de Boids (simulação de
+bando) para a disciplina de Computação Gráfica. Ele usa C++, OpenGL
+(modo de compatibilidade), GLFW, GLAD e GLM.
 
-[cite_start]O bando obedece a três regras principais: Separação [cite: 8][cite_start], Coesão [cite: 9] [cite_start]e Alinhamento[cite: 10].
+------------------------------------------------------------------------
 
-## 👥 Autores
+Dependencies
 
-* Mateus Ryan de Castro Lima
-* [Nome do Integrante 2]
+Todas as dependências necessárias (GLFW, GLAD, GLM) estão incluídas
+(“vendored”) na pasta /lib deste repositório.
 
-## 🚀 Como Executar
+-   GLFW (64-bit)
+-   GLAD
+-   GLM
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone [URL_DO_SEU_REPOSITORIO]
-    cd trabalho-boids-ufmg
-    ```
+Como Compilar e Executar
 
-2.  **Crie e ative um ambiente virtual:**
-    ```bash
-    # Windows
-    python -m venv venv
-    .\venv\Scripts\activate
+Este projeto usa make e o compilador g++ (MinGW 64-bit).
 
-    # macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
+1. Compilando
 
-3.  **Instale as dependências:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+No terminal, na raiz do projeto, execute:
 
-4.  **Execute o programa:**
-    ```bash
-    python src/main.py
-    ```
+    make clean
+    make
 
-## 🎮 Controles
+Isso criará um executável chamado boids_app.exe.
 
-* [cite_start]**Setas (ou WASD):** Controlam o boid-objetivo[cite: 13].
-* [cite_start]**Tecla `+`:** Adiciona um novo boid[cite: 24].
-* [cite_start]**Tecla `-`:** Remove um boid[cite: 24].
-* [cite_start]**Tecla `C` (ou 1, 2, 3):** Alterna os modos de câmera[cite: 18].
-* [cite_start]**Tecla `P`:** Pausa/despausa a simulação[cite: 34].
-* [cite_start]**Tecla `F`:** Ativa/desativa o fog[cite: 33].
+2. Executando
+
+Após a compilação, execute:
+
+    ./boids_app.exe
+
+Controles
+
+-   ESC: Fecha a aplicação.
+-   C: Alterna entre os 3 modos de câmera (Torre, Atrás do Bando,
+    Lateral).
+-   I / J / K / L: Move o Boid-Objetivo (líder vermelho) no plano.
+-   U / O: Move o Boid-Objetivo para cima e para baixo.
+-   + (ou =): Adiciona um novo boid ao bando.
+-   -: Remove um boid do bando.

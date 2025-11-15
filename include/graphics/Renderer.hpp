@@ -12,7 +12,7 @@ public:
 
 private:
     // Função helper: desenha um único boid na origem (0,0,0)
-    void drawBoidShape();
+    void drawBoidShape(const Boid& boid);
 };
 
 #endif

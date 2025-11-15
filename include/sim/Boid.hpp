@@ -17,11 +17,14 @@ public:
     float maxSpeed;
     float maxForce;
 
+    float wingAngle; // O ângulo atual da asa
+    float wingSpeed; // A velocidade que a asa bate
+
     Boid();
 
     void update(float deltaTime);
 
-    void calculateForces(const std::vector<Boid>& flock);
+    void calculateForces(const std::vector<Boid>& flock, const glm::vec3& goalPosition);
 
     void applyForce(const glm::vec3& force);
 
