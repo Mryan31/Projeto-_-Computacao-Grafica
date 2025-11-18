@@ -1,7 +1,9 @@
 // src/graphics/Renderer.cpp
 #include "graphics/Renderer.hpp"
+#include "graphics/Shadow.hpp"
 #include <glad/glad.h>   // Para comandos OpenGL (glBegin, glEnd, etc.)
 #include <GLFW/glfw3.h>
+#include <glm/gtc/type_ptr.hpp>
 
 Renderer::Renderer() {
     // Construtor (pode ser usado para carregar texturas, etc.)
@@ -97,4 +99,40 @@ void Renderer::drawBoidShape(const Boid& boid) {
             glVertex3f(size, 0.0f, 0.2f * size);
         glEnd();
     glPopMatrix();
+}
+
+void Renderer::drawBoidGeometry(const Boid& boid) {
+    // Chama a função original (ela já desenha a geometria completa)
+    drawBoidShape(boid);
+}
+
+void Renderer::drawShadows(const Flock& flock, const glm::vec3& lightDir) {
+    glm::vec3 normalizedLight = glm::normalize(lightDir);
+    glm::mat4 shadowMatrix = Shadow::getShadowMatrix(normalizedLight, 0.0f);
+    Shadow::beginShadowRender(0.4f);
+    
+    // Desenha sombra de cada boid
+    for (const Boid& boid : flock.boids) {
+        glPushMatrix();
+        glTranslatef(boid.position.x, boid.position.y, boid.position.z);
+        glTranslatef(0.0f, 0.01f, 0.0f);
+        glMultMatrixf(glm::value_ptr(shadowMatrix));
+        drawBoidGeometry(boid);
+        glPopMatrix();
+    }
+    
+    // Desenha sombra do boid-objetivo (líder)
+    glm::vec3 goalPos = flock.getGoalPosition();
+    glPushMatrix();
+        glTranslatef(goalPos.x, goalPos.y, goalPos.z);
+        glTranslatef(0.0f, 0.01f, 0.0f);
+        glMultMatrixf(glm::value_ptr(shadowMatrix));
+        
+        Boid dummyBoid;
+        dummyBoid.wingAngle = 0.0f;
+        drawBoidGeometry(dummyBoid);
+    glPopMatrix();
+    
+    // Restaura o estado do OpenGL
+    Shadow::endShadowRender();
 }

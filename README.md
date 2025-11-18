@@ -39,7 +39,35 @@ Controles
 -   ESC: Fecha a aplicação.
 -   C: Alterna entre os 3 modos de câmera (Torre, Atrás do Bando,
     Lateral).
+-   S: Liga/Desliga as sombras dos boids no chão.
+-   F: Liga/Desliga o fog (névoa/neblina).
+-   P: Pausa/Continua a simulação.
+-   D: Ativa/Desativa modo debug (passo-a-passo).
+-   SPACE: (Modo debug) Avança 1 frame por vez.
 -   I / J / K / L: Move o Boid-Objetivo (líder vermelho) no plano.
 -   U / O: Move o Boid-Objetivo para cima e para baixo.
 -   + (ou =): Adiciona um novo boid ao bando.
 -   -: Remove um boid do bando.
+
+Funcionalidades
+
+Funcionalidades Básicas (80%)
+
+-   ✅ Mundo 3D com chão e torre central em forma de cone
+-   ✅ 3 modos de câmera (Torre, Atrás do Bando, Lateral)
+-   ✅ Iluminação OpenGL com luz ambiente e direcional
+-   ✅ Boids desenhados como poliedros 3D
+-   ✅ Adicionar/Remover boids dinamicamente
+-   ✅ Animação de batida de asas
+
+Funcionalidades Extras Implementadas (20%)
+
+-   ✅ Sombras (5%): Projeção planar dos boids no chão com toggle
+-   ✅ Reshape (5%): Redimensionamento dinâmico da janela mantendo
+    proporção correta
+-   ✅ Fog (5%): Efeito de névoa/neblina que aumenta com a distância
+-   ✅ Modo Pausa (5%): Sistema completo de pausa e debug
+    -   Pausa/continua com tecla P
+    -   Adicionar/remover boids durante pausa
+    -   Modo debug passo-a-passo (D + SPACE)
+    -   Informações detalhadas no console

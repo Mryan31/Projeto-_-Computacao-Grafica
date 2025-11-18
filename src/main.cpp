@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp> // Para glm::perspective
 #include <iostream>
+#include <iomanip>
 
 // Nossas classes do projeto
 #include "sim/Flock.hpp"
@@ -15,6 +16,53 @@
 bool cKeyPressed = false;
 bool plusKeyPressed = false;
 bool minusKeyPressed = false;
+bool sKeyPressed = false;
+bool fKeyPressed = false;
+
+bool shadowsEnabled = true;
+bool fogEnabled = false;
+
+// Modo de pausa e debug
+bool isPaused = false;
+bool debugMode = false;
+bool pKeyPressed = false;
+bool dKeyPressed = false;
+bool stepKeyPressed = false;
+int debugFrameCount = 0;
+
+// Função para imprimir informações de debug
+void printDebugInfo(const Flock& flock, int frame) {
+    std::cout << "\n-----------------------------------" << std::endl;
+    std::cout << "│  DEBUG - Frame " << frame << std::endl;
+    std::cout << "-----------------------------------" << std::endl;
+    std::cout << "│ Boids: " << flock.boids.size() << std::endl;
+    
+    if (!flock.boids.empty()) {
+        const Boid& b = flock.boids[0];
+        std::cout << "│ Boid[0] Pos: (" 
+                  << std::fixed << std::setprecision(2)
+                  << b.position.x << ", " 
+                  << b.position.y << ", " 
+                  << b.position.z << ")" << std::endl;
+        
+        float speed = glm::length(b.velocity);
+        std::cout << "│ Boid[0] Speed: " << speed << std::endl;
+    }
+    
+    glm::vec3 goal = flock.getGoalPosition();
+    std::cout << "│ Goal: (" 
+              << std::fixed << std::setprecision(2)
+              << goal.x << ", " 
+              << goal.y << ", " 
+              << goal.z << ")" << std::endl;
+    
+    glm::vec3 center = flock.center;
+    std::cout << "│ Center: (" 
+              << center.x << ", " 
+              << center.y << ", " 
+              << center.z << ")" << std::endl;
+    std::cout << "-----------------------------------" << std::endl;
+}
 
 // Função para configurar a projeção 3D
 void setupProjection(GLFWwindow* window) {
@@ -40,6 +88,24 @@ void setupProjection(GLFWwindow* window) {
     glLoadIdentity();
 }
 
+// Callback para redimensionamento da janela (Reshape)
+void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+    // Atualiza a projeção quando a janela é redimensionada
+    setupProjection(window);
+    std::cout << "Janela redimensionada para: " << width << "x" << height << std::endl;
+}
+
+// Função para configurar o Fog (névoa)
+void setupFog() {
+    GLfloat fogColor[] = {0.3f, 0.3f, 0.5f, 1.0f};
+    
+    glFogi(GL_FOG_MODE, GL_LINEAR);
+    glFogfv(GL_FOG_COLOR, fogColor);
+    glFogf(GL_FOG_START, 15.0f);
+    glFogf(GL_FOG_END, 60.0f);
+    glHint(GL_FOG_HINT, GL_NICEST);
+}
+
 int main() {
     // ---- 1. Inicialização do GLFW ----
     if (!glfwInit()) {
@@ -63,6 +129,8 @@ int main() {
     }
     glfwMakeContextCurrent(window);
 
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+
     // ---- 3. Inicialização do GLAD ----
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Falha ao inicializar GLAD!" << std::endl;
@@ -83,6 +151,7 @@ int main() {
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
+    setupFog();
 
     // ---- Nossos Objetos Principais ----
     Flock flock;
@@ -111,6 +180,81 @@ int main() {
         }
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
             cKeyPressed = false;
+        }
+
+        // Toggle de sombras ao pressionar "S"
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && !sKeyPressed) {
+            shadowsEnabled = !shadowsEnabled;
+            sKeyPressed = true;
+            std::cout << "Sombras: " << (shadowsEnabled ? "ATIVADAS" : "DESATIVADAS") << std::endl;
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE) {
+            sKeyPressed = false;
+        }
+
+        // Toggle de fog ao pressionar "F"
+        if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !fKeyPressed) {
+            fogEnabled = !fogEnabled;
+            fKeyPressed = true;
+            
+            if (fogEnabled) {
+                glEnable(GL_FOG);
+                std::cout << "Fog: ATIVADO" << std::endl;
+            } else {
+                glDisable(GL_FOG);
+                std::cout << "Fog: DESATIVADO" << std::endl;
+            }
+        }
+        if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE) {
+            fKeyPressed = false;
+        }
+
+        // ===== MODO PAUSA E DEBUG =====
+        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !pKeyPressed) {
+            isPaused = !isPaused;
+            pKeyPressed = true;
+            
+            if (isPaused) {
+                std::cout << "\n PAUSADO - Pressione P para continuar" << std::endl;
+            } else {
+                std::cout << "RODANDO" << std::endl;
+            }
+        }
+        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
+            pKeyPressed = false;
+        }
+
+        // Toggle de modo debug com 'D'
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && !dKeyPressed) {
+            debugMode = !debugMode;
+            dKeyPressed = true;
+            
+            if (debugMode) {
+                isPaused = true;
+                debugFrameCount = 0;
+                std::cout << "\n-----------------------------------" << std::endl;
+                std::cout << "||   MODO DEBUG ATIVADO           ||" << std::endl;
+                std::cout << "||   SPACE = Avancar 1 frame      ||" << std::endl;
+                std::cout << "||   D = Desativar debug          ||" << std::endl;
+                std::cout << "-----------------------------------" << std::endl;
+            } else {
+                std::cout << "\n[DEBUG DESATIVADO]" << std::endl;
+            }
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE) {
+            dKeyPressed = false;
+        }
+
+        // Passo-a-passo no modo debug
+        if (debugMode && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !stepKeyPressed) {
+            stepKeyPressed = true;
+            debugFrameCount++;
+            
+            flock.update(0.016f);
+            printDebugInfo(flock, debugFrameCount);
+        }
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
+            stepKeyPressed = false;
         }
 
         // Controle do Boid-Objetivo (Líder)
@@ -153,7 +297,11 @@ int main() {
         }
 
         // ---- Lógica/Update ----
-        flock.update(deltaTime); // Atualiza a posição dos boids
+        // Só atualiza se não estiver pausado E não estiver em modo debug
+        // No modo debug, o update é feito manualmente com SPACE
+        if (!isPaused && !debugMode) {
+            flock.update(deltaTime); // Atualiza a posição dos boids
+        }
 
         // ---- Renderização ----
         // Limpa a tela
@@ -169,7 +317,13 @@ int main() {
         // 2. Desenha o cenário (chão, torre)
         world.draw();
 
-        // 3. Desenha os boids
+        // 3. Desenha as sombras dos boids
+        if (shadowsEnabled) {
+            glm::vec3 lightDir(50.0f, 50.0f, 100.0f);
+            renderer.drawShadows(flock, lightDir);
+        }
+
+        // 4. Desenha os boids
         renderer.draw(flock);
 
         // ---- Troca os Buffers e Processa Eventos ----
