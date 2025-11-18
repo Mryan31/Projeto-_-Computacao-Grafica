@@ -1,7 +1,7 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
-#include "sim/Flock.hpp" // Precisa saber o que é um "Flock"
+#include "sim/Flock.hpp"
 #include <glm/glm.hpp>
 
 class Renderer {

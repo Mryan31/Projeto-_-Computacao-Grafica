@@ -29,8 +29,6 @@ public:
     void applyForce(const glm::vec3& force);
 
 private:
-    // --- Funções de Regra (Helpers) ---
-
     // Helper para calcular a força de Separação
     glm::vec3 separate(const std::vector<Boid>& flock);
 

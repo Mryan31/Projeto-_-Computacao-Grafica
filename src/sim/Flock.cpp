@@ -1,13 +1,11 @@
-// src/sim/Flock.cpp
 #include "sim/Flock.hpp"
-#include <iostream> // <-- CORREÇÃO: Inclui a biblioteca de output
-#include <cstdlib>  // <-- CORREÇÃO: Inclui a biblioteca para rand()
+#include <iostream>
+#include <cstdlib>
 
-// --- CORREÇÃO: A função 'randomFloat' precisa ser definida aqui ---
+
 float randomFloat() {
     return (float)rand() / (float)RAND_MAX * 2.0f - 1.0f;
 }
-// --- FIM DA CORREÇÃO ---
 
 Flock::Flock(int startSize) : 
     center(0.0f, 0.0f, 0.0f),
@@ -27,11 +25,9 @@ glm::vec3 Flock::getGoalPosition() const {
     return goalPosition;
 }
 
-// --- Nova Função ---
 void Flock::addBoid() {
     Boid newBoid;
     
-    // Posiciona o novo boid perto do centro do bando
     newBoid.position = center + glm::vec3(
         randomFloat(),
         randomFloat(),
@@ -39,11 +35,9 @@ void Flock::addBoid() {
     );
     
     boids.push_back(newBoid);
-    // Agora 'std::cout' e 'std::endl' funcionarão
     std::cout << "Boid adicionado. Total: " << boids.size() << std::endl;
 }
 
-// --- Nova Função ---
 void Flock::removeBoid() {
     if (!boids.empty()) {
         boids.pop_back();
@@ -54,10 +48,8 @@ void Flock::removeBoid() {
 
 void Flock::update(float deltaTime) {
     
-    // --- 1. ATUALIZA O LÍDER ---
     goalPosition += goalVelocity * deltaTime;
 
-    // (Opcional) Limites para o líder não fugir
     if (goalPosition.y < 2.0f) goalPosition.y = 2.0f;
     if (goalPosition.y > 40.0f) goalPosition.y = 40.0f;
     if (goalPosition.x > 100.0f) goalPosition.x = -100.0f;
@@ -66,12 +58,10 @@ void Flock::update(float deltaTime) {
     if (goalPosition.z < -100.0f) goalPosition.z = 100.0f;
 
 
-    // --- 2. CALCULAR FORÇAS ---
     for (Boid& boid : boids) {
         boid.calculateForces(boids, goalPosition);
     }
 
-    // --- 3. ATUALIZAR FÍSICA ---
     glm::vec3 sumPositions(0.0f);
     if (boids.empty()) {
         center = glm::vec3(0.0f);

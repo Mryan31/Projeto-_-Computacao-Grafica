@@ -1,18 +1,15 @@
-// src/main.cpp
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp> // Para glm::perspective
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <iomanip>
 
-// Nossas classes do projeto
 #include "sim/Flock.hpp"
 #include "graphics/Camera.hpp"
 #include "graphics/World.hpp"
 #include "graphics/Renderer.hpp"
 
-// Variáveis globais para controle de input
 bool cKeyPressed = false;
 bool plusKeyPressed = false;
 bool minusKeyPressed = false;
@@ -22,7 +19,6 @@ bool fKeyPressed = false;
 bool shadowsEnabled = true;
 bool fogEnabled = false;
 
-// Modo de pausa e debug
 bool isPaused = false;
 bool debugMode = false;
 bool pKeyPressed = false;
@@ -30,7 +26,6 @@ bool dKeyPressed = false;
 bool stepKeyPressed = false;
 int debugFrameCount = 0;
 
-// Função para imprimir informações de debug
 void printDebugInfo(const Flock& flock, int frame) {
     std::cout << "\n-----------------------------------" << std::endl;
     std::cout << "│  DEBUG - Frame " << frame << std::endl;
@@ -64,7 +59,6 @@ void printDebugInfo(const Flock& flock, int frame) {
     std::cout << "-----------------------------------" << std::endl;
 }
 
-// Função para configurar a projeção 3D
 void setupProjection(GLFWwindow* window) {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -74,28 +68,21 @@ void setupProjection(GLFWwindow* window) {
 
     glViewport(0, 0, width, height);
     
-    // Define a matriz de projeção (Perspectiva)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    // Usando GLM para criar a matriz de perspectiva (substitui o gluPerspective)
-    // Campo de visão de 45 graus, aspect ratio da tela, ver de 0.1 a 1000 unidades
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
     glLoadMatrixf(&projectionMatrix[0][0]);
 
-    // Volta para a matriz de ModelView
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
 
-// Callback para redimensionamento da janela (Reshape)
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
-    // Atualiza a projeção quando a janela é redimensionada
     setupProjection(window);
     std::cout << "Janela redimensionada para: " << width << "x" << height << std::endl;
 }
 
-// Função para configurar o Fog (névoa)
 void setupFog() {
     GLfloat fogColor[] = {0.3f, 0.3f, 0.5f, 1.0f};
     
@@ -107,20 +94,15 @@ void setupFog() {
 }
 
 int main() {
-    // ---- 1. Inicialização do GLFW ----
     if (!glfwInit()) {
         std::cerr << "Falha ao inicializar GLFW!" << std::endl;
         return -1;
     }
 
-    // Configura a versão do OpenGL (3.3)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // *** MUDANÇA IMPORTANTE: Usando o perfil "Compatibility" ***
-    // Isso nos dá acesso às funções fáceis (glBegin, glTranslatef, etc.)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 
-    // ---- 2. Criação da Janela ----
     GLFWwindow* window = glfwCreateWindow(800, 600, "Trabalho Boids - UFMG", NULL, NULL);
     if (window == NULL) {
         std::cerr << "Falha ao criar a janela GLFW!" << std::endl;
@@ -131,19 +113,16 @@ int main() {
 
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
-    // ---- 3. Inicialização do GLAD ----
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Falha ao inicializar GLAD!" << std::endl;
         return -1;
     }
 
-    // ---- Configurações do OpenGL ----
     glEnable(GL_DEPTH_TEST); // Essencial para 3D
     glEnable(GL_LIGHTING);   // Habilita luz (requisito)
     glEnable(GL_LIGHT0);     // Habilita luz 0
     glEnable(GL_COLOR_MATERIAL); // Permite que glColor() afete o material
 
-    // Define uma luz ambiente e uma luz direcional simples
     float ambientLight[] = { 0.3f, 0.3f, 0.3f, 1.0f };
     float diffuseLight[] = { 0.7f, 0.7f, 0.7f, 1.0f };
     float lightPosition[] = { 50.0f, 50.0f, 100.0f, 0.0f }; // Luz direcional "do céu"
@@ -153,7 +132,6 @@ int main() {
 
     setupFog();
 
-    // ---- Nossos Objetos Principais ----
     Flock flock;
     Camera camera;
     World world;
@@ -161,19 +139,15 @@ int main() {
 
     float lastTime = (float)glfwGetTime();
 
-    // ---- 4. O Loop Principal (Game Loop) ----
     while (!glfwWindowShouldClose(window)) {
-        // --- Cálculo do DeltaTime ---
         float currentTime = (float)glfwGetTime();
         float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        // ---- Processamento de Input ----
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
 
-        // Troca o modo da câmera ao pressionar "C"
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS && !cKeyPressed) {
             camera.nextMode();
             cKeyPressed = true;
@@ -182,7 +156,6 @@ int main() {
             cKeyPressed = false;
         }
 
-        // Toggle de sombras ao pressionar "S"
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && !sKeyPressed) {
             shadowsEnabled = !shadowsEnabled;
             sKeyPressed = true;
@@ -192,7 +165,6 @@ int main() {
             sKeyPressed = false;
         }
 
-        // Toggle de fog ao pressionar "F"
         if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !fKeyPressed) {
             fogEnabled = !fogEnabled;
             fKeyPressed = true;
@@ -209,7 +181,6 @@ int main() {
             fKeyPressed = false;
         }
 
-        // ===== MODO PAUSA E DEBUG =====
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && !pKeyPressed) {
             isPaused = !isPaused;
             pKeyPressed = true;
@@ -224,7 +195,6 @@ int main() {
             pKeyPressed = false;
         }
 
-        // Toggle de modo debug com 'D'
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && !dKeyPressed) {
             debugMode = !debugMode;
             dKeyPressed = true;
@@ -245,7 +215,6 @@ int main() {
             dKeyPressed = false;
         }
 
-        // Passo-a-passo no modo debug
         if (debugMode && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !stepKeyPressed) {
             stepKeyPressed = true;
             debugFrameCount++;
@@ -257,7 +226,6 @@ int main() {
             stepKeyPressed = false;
         }
 
-        // Controle do Boid-Objetivo (Líder)
         {
             glm::vec3 goalVel(0.0f);
             float leaderSpeed = 5.0f; // 5 unidades/segundo
@@ -278,8 +246,6 @@ int main() {
             flock.setGoalVelocity(goalVel);
         }
 
-        // Adicionar/Remover Boids
-        // Tecla '+' (que é a mesma que '=')
         if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS && !plusKeyPressed) {
             flock.addBoid();
             plusKeyPressed = true;
@@ -296,42 +262,30 @@ int main() {
             minusKeyPressed = false;
         }
 
-        // ---- Lógica/Update ----
-        // Só atualiza se não estiver pausado E não estiver em modo debug
-        // No modo debug, o update é feito manualmente com SPACE
         if (!isPaused && !debugMode) {
             flock.update(deltaTime); // Atualiza a posição dos boids
         }
 
-        // ---- Renderização ----
-        // Limpa a tela
         glClearColor(0.1f, 0.1f, 0.3f, 1.0f); // Fundo azul escuro
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Configura a projeção 3D (importante para redimensionar a janela)
         setupProjection(window);
 
-        // 1. Configura a câmera
         camera.look(flock);
 
-        // 2. Desenha o cenário (chão, torre)
         world.draw();
 
-        // 3. Desenha as sombras dos boids
         if (shadowsEnabled) {
             glm::vec3 lightDir(50.0f, 50.0f, 100.0f);
             renderer.drawShadows(flock, lightDir);
         }
 
-        // 4. Desenha os boids
         renderer.draw(flock);
 
-        // ---- Troca os Buffers e Processa Eventos ----
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // ---- 5. Limpeza ----
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;

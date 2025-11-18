@@ -1,19 +1,13 @@
-# Ignora a pasta de objetos compilados
 obj/
 
-# Ignora o executável final
 *.exe
 boids_app
 
-# Ignora arquivos de sistema do Windows e macOS
 Thumbs.db
 .DS_Store
 
-# Ignora arquivos do VS Code
 .vscode/
 
-# --- ADICIONE ESTAS LINHAS ---
-# Ignora documentação e testes das bibliotecas
 lib/*/doc/
 lib/*/docs/
 lib/*/test/
