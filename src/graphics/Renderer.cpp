@@ -85,28 +85,34 @@ void Renderer::drawBoidGeometry(const Boid& boid) {
 }
 
 void Renderer::drawShadows(const Flock& flock, const glm::vec3& lightDir) {
-    glm::vec3 normalizedLight = glm::normalize(lightDir);
-    glm::mat4 shadowMatrix = Shadow::getShadowMatrix(normalizedLight, 0.0f);
-    Shadow::beginShadowRender(0.4f);
+    // Matriz de projeção planar no plano Y = 0.01 (ligeiramente acima do chão)
+    glm::mat4 shadowMatrix = Shadow::getShadowMatrix(lightDir, 0.01f);
     
+    Shadow::beginShadowRender(1.0f); // Sombra completamente preta
+    
+    // Desenhar sombras dos boids
     for (const Boid& boid : flock.boids) {
         glPushMatrix();
-        glTranslatef(boid.position.x, boid.position.y, boid.position.z);
-        glTranslatef(0.0f, 0.01f, 0.0f);
         glMultMatrixf(glm::value_ptr(shadowMatrix));
+        glTranslatef(boid.position.x, boid.position.y, boid.position.z);
         drawBoidGeometry(boid);
         glPopMatrix();
     }
     
+    // Desenhar sombra do líder (usa o primeiro boid para ter animação das asas)
     glm::vec3 goalPos = flock.getGoalPosition();
     glPushMatrix();
-        glTranslatef(goalPos.x, goalPos.y, goalPos.z);
-        glTranslatef(0.0f, 0.01f, 0.0f);
         glMultMatrixf(glm::value_ptr(shadowMatrix));
+        glTranslatef(goalPos.x, goalPos.y, goalPos.z);
         
-        Boid dummyBoid;
-        dummyBoid.wingAngle = 0.0f;
-        drawBoidGeometry(dummyBoid);
+        // Usar o wingAngle de um boid real para animar as asas
+        Boid leaderBoid;
+        if (!flock.boids.empty()) {
+            leaderBoid.wingAngle = flock.boids[0].wingAngle;
+        } else {
+            leaderBoid.wingAngle = 0.0f;
+        }
+        drawBoidGeometry(leaderBoid);
     glPopMatrix();
     
     Shadow::endShadowRender();

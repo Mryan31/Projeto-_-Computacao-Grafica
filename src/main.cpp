@@ -17,7 +17,7 @@ bool sKeyPressed = false;
 bool fKeyPressed = false;
 
 bool shadowsEnabled = true;
-bool fogEnabled = false;
+bool fogEnabled = true;
 
 bool isPaused = false;
 bool debugMode = false;
@@ -88,8 +88,8 @@ void setupFog() {
     
     glFogi(GL_FOG_MODE, GL_LINEAR);
     glFogfv(GL_FOG_COLOR, fogColor);
-    glFogf(GL_FOG_START, 15.0f);
-    glFogf(GL_FOG_END, 60.0f);
+    glFogf(GL_FOG_START, 30.0f);  // Começa mais longe para ver a ilha
+    glFogf(GL_FOG_END, 80.0f);    // Termina nas extremidades da ilha
     glHint(GL_FOG_HINT, GL_NICEST);
 }
 
@@ -274,9 +274,11 @@ int main() {
         camera.look(flock);
 
         world.draw();
+        world.drawSun(); // Desenhar o sol no céu
 
         if (shadowsEnabled) {
-            glm::vec3 lightDir(50.0f, 50.0f, 100.0f);
+            // Direção da luz do sol (de onde a luz vem)
+            glm::vec3 lightDir(80.0f, 100.0f, 60.0f); // Mesma posição da luz
             renderer.drawShadows(flock, lightDir);
         }
 

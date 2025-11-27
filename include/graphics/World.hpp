@@ -11,6 +11,9 @@ public:
 
     //Desenha o chão
     void draw();
+    
+    //Desenha o sol
+    void drawSun();
 
 private:
     GLUquadric* quadric;
