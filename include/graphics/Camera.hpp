@@ -8,7 +8,7 @@
 
 class Camera{
 public:
-    int mode; // 0 = Torre, 1 = Atrás, 2 = Lateral
+    int mode; // 0 = Torre, 1 = Atrás, 2 = Lateral, 3 = Terceira Pessoa (Líder)
 
     Camera();
 

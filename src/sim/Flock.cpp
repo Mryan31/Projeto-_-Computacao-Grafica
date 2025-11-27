@@ -25,6 +25,10 @@ glm::vec3 Flock::getGoalPosition() const {
     return goalPosition;
 }
 
+glm::vec3 Flock::getGoalVelocity() const {
+    return goalVelocity;
+}
+
 void Flock::addBoid() {
     Boid newBoid;
     
@@ -59,7 +63,7 @@ void Flock::update(float deltaTime) {
 
 
     for (Boid& boid : boids) {
-        boid.calculateForces(boids, goalPosition);
+        boid.calculateForces(boids, goalPosition, goalVelocity);
     }
 
     glm::vec3 sumPositions(0.0f);

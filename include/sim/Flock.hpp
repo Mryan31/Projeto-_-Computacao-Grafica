@@ -18,6 +18,7 @@ public:
     void update(float deltaTime);
     void setGoalVelocity (const glm::vec3& vel);
     glm::vec3 getGoalPosition() const;
+    glm::vec3 getGoalVelocity() const;
 
     void addBoid();
     void removeBoid();

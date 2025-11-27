@@ -37,8 +37,8 @@ Após a compilação, execute:
 Controles
 
 -   ESC: Fecha a aplicação.
--   C: Alterna entre os 3 modos de câmera (Torre, Atrás do Bando,
-    Lateral).
+-   C: Alterna entre os 4 modos de câmera (Torre, Atrás do Bando,
+    Lateral, Terceira Pessoa seguindo o líder).
 -   S: Liga/Desliga as sombras dos boids no chão.
 -   F: Liga/Desliga o fog (névoa/neblina).
 -   P: Pausa/Continua a simulação.
@@ -54,7 +54,7 @@ Funcionalidades
 Funcionalidades Básicas (80%)
 
 -   ✅ Mundo 3D com chão e torre central em forma de cone
--   ✅ 3 modos de câmera (Torre, Atrás do Bando, Lateral)
+-   ✅ 4 modos de câmera (Torre, Atrás do Bando, Lateral, Terceira Pessoa seguindo líder)
 -   ✅ Iluminação OpenGL com luz ambiente e direcional
 -   ✅ Boids desenhados como poliedros 3D
 -   ✅ Adicionar/Remover boids dinamicamente

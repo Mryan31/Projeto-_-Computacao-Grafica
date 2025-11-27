@@ -24,7 +24,7 @@ public:
 
     void update(float deltaTime);
 
-    void calculateForces(const std::vector<Boid>& flock, const glm::vec3& goalPosition);
+    void calculateForces(const std::vector<Boid>& flock, const glm::vec3& goalPosition, const glm::vec3& goalVelocity);
 
     void applyForce(const glm::vec3& force);
 
